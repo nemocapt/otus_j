@@ -7,19 +7,19 @@
     <name>hw01</name>
 
     <groupId>ru.otus.java-2018-08</groupId>
-    <artifactId>hw01</artifactId>
+    <artifactId>hw02</artifactId>
     <version>1.0-SNAPSHOT</version>
-
-    <dependencies>
-        <dependency>
-            <groupId>com.googlecode.lanterna</groupId>
-            <artifactId>lanterna</artifactId>
-            <version>3.0.1</version>
-        </dependency>
-    </dependencies>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -27,7 +27,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>ru.otus.java_2018_08.student.hw01.LanternaMain</mainClass>
+                            <mainClass>ru.otus.java_2018_08.student.hw02.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -44,30 +44,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>com.github.wvengen</groupId>
-                <artifactId>proguard-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>proguard</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <obfuscate>true</obfuscate>
-                    <options>
-                        <option>-allowaccessmodification</option>
-                        <option>-keep public class ru.otus.java_2018_08.student.hw01.LanternaMain { public *; public
-                            static *; }</option>
-                        <option>-keepclassmembers public enum * { **[] $VALUES; public *; }</option>
-                    </options>
-                    <libs>
-                        <lib>${java.home}/lib/rt.jar</lib>
-                    </libs>
-                </configuration>
             </plugin>
         </plugins>
     </build>

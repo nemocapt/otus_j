@@ -1,4 +1,4 @@
-package ru.otus.java_2018_08.student;
+package ru.otus.java_2018_08.student.hw01;
 
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
