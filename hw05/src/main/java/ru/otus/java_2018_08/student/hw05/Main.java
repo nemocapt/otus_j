@@ -19,9 +19,11 @@ public class Main {
     }
 
     protected static void measure() {
+        GCInfo.gcListener();
+
         new Thread( () -> {
             while (true) {
-                GCInfo.printInfo();
+                GCInfo.printGcInfo();
                 delay(1000);
             }
         }).start();
