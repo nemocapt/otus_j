@@ -3,7 +3,7 @@ package ru.otus.java_2018_08.student.hw06.main;
 import ru.otus.java_2018_08.student.hw06.engine.CacheList;
 
 /*
- * args: -Xmx64m -Xms64m
+ * args: -Xmx16m -Xms16m
  */
 public class Main {
     static final long timeLife = 10;
