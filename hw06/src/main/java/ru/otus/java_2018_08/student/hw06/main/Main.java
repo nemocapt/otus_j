@@ -8,7 +8,7 @@ import ru.otus.java_2018_08.student.hw06.engine.CacheList;
 public class Main {
     static final long timeLife = 10;
 
-    static CacheList<Integer, String> cache = new CacheList<>(timeLife);
+    static CacheList<Integer, String> cache = new CacheList<Integer, String>().setTimeLife(timeLife);
     static int requestDelay = 100;
 
     static public void main(String... args) {

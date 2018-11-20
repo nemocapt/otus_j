@@ -13,19 +13,24 @@ public class CacheList<K, V> {
     private int hit = 0;
     private int miss = 0;
     private long timeLife = 10; // seconds
-    private long timeShedulePeriod = 2; // seconds
+    private long timeSchedulePeriod = 2; // seconds
 
-    private ScheduledExecutorService shedule = Executors.newScheduledThreadPool(1);
+    private ScheduledExecutorService schedule = Executors.newScheduledThreadPool(1);
 
     public CacheList() {
         doTask();
     }
 
-    public CacheList(long timeLife) {
-        this();
-
+    public CacheList<K, V> setTimeLife(long timeLife) {
         this.timeLife = timeLife;
-        this.timeShedulePeriod = timeLife;
+
+        return this;
+    }
+
+    public CacheList<K, V> setTimeSchedulePeriod(long timeSchedulePeriod) {
+        this.timeSchedulePeriod = timeSchedulePeriod;
+
+        return this;
     }
 
     private void delete() {
@@ -53,7 +58,7 @@ public class CacheList<K, V> {
     }
 
     private void doTask() {
-        shedule.scheduleAtFixedRate(this::delete, timeShedulePeriod, timeShedulePeriod, TimeUnit.SECONDS);
+        schedule.scheduleAtFixedRate(this::delete, timeSchedulePeriod, timeSchedulePeriod, TimeUnit.SECONDS);
     }
 
     public void put(K key, V val) {
@@ -84,7 +89,7 @@ public class CacheList<K, V> {
         return miss;
     }
     public void close() {
-        shedule.shutdown();
+        schedule.shutdown();
     }
 
     public int size() {
