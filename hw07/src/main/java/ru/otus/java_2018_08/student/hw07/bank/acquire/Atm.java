@@ -1,0 +1,175 @@
+package ru.otus.java_2018_08.student.hw07.bank.acquire;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ru.otus.java_2018_08.student.hw07.bank.Account;
+import ru.otus.java_2018_08.student.hw07.bank.Bank;
+import ru.otus.java_2018_08.student.hw07.common.Banknote;
+import ru.otus.java_2018_08.student.hw07.common.Currency;
+
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.stream.Collectors;
+
+public abstract class Atm {
+    static Logger log = LoggerFactory.getLogger(Atm.class);
+
+    protected AtmState state = AtmState.READY;
+
+    private Map<Banknote, AtmBank> cassette = new HashMap<>();
+    private Card card;
+    private Bank bank;
+    private Map<Banknote, Integer> cash;
+
+    public Atm(Bank bank) {
+        this.bank = bank;
+
+        init();
+    }
+
+    public void addCassette(Banknote banknote, int banknoteCapacity) {
+        cassette.put(banknote, new AtmBank(banknoteCapacity));
+    }
+
+    public void insertCard(Card card, String pin) {
+        state.insertCard(this, () -> {
+            boolean result = card.checkPin(pin);
+
+            if (result) {
+                this.card = card;
+            }
+
+            return result;
+        });
+    }
+
+    public void getCardBack() {
+        state.getCardBack(this, () -> {
+            card = null;
+
+            return true;
+        });
+    }
+
+    public Account getBalance() {
+        return state.getBalance(() -> {
+            Account account = bank.getAccountByCard(card);
+
+            log.info(account.toString());
+
+            return account;
+        });
+    }
+
+    public boolean cashOut(final int sum, Currency currency) {
+        boolean result = state.tryPullBanknote(this, () -> {
+            Account account = getBalance();
+
+            if (currency == account.getCurrency() && account.getBalance() < sum) {
+                log.warn("Low balance");
+
+                return false;
+            }
+
+            cash = calculateCash(sum, currency, this::checkCountCashToOut);
+            if (cash == null) {
+                log.warn("Not enough cash");
+
+                return false;
+            }
+
+            return true;
+        });
+
+        result = result && state.pullBanknote(this, () -> {
+            bank.getAccountByCard(card).debit(sum);
+            cash.forEach((b, i) ->
+                cassette.get(b).pull(i)
+            );
+
+            log.info("Cash out: {}", cash.toString());
+            cash = null;
+
+            return true;
+        });
+
+        log.info("Current cash in ATM {}", cassette.toString());
+
+        return result;
+    }
+
+    public boolean cashIn(final int sum, Currency currency) {
+        boolean result = state.tryPutBanknote(this, () -> {
+            cash = calculateCash(sum, currency, this::checkCountCashToIn);
+            if (cash == null) {
+                log.warn("Not enough space");
+
+                return false;
+            }
+
+            return true;
+        });
+
+        result = result && state.putBanknote(this, () -> {
+            cash.forEach((b, i) ->
+                cassette.get(b).put(i)
+            );
+            bank.getAccountByCard(card).deposit(sum);
+
+            log.info("Cash in: {}", cash.toString());
+            cash = null;
+
+            return true;
+        });
+
+        log.info("Current cash in ATM {}", cassette.toString());
+
+        return result;
+    }
+
+    protected abstract void init();
+
+    private Map<Banknote, Integer> calculateCash(final int sum, Currency currency, BiFunction<AtmBank, Integer, Boolean> getRemainder) {
+        Set<Banknote> set = cassette.keySet().stream().filter(
+                b -> b.getCurrency() == currency
+        ).sorted(
+                Comparator.comparingInt(Banknote::getNominal).reversed()
+        ).collect(Collectors.toSet());
+
+        int localSum = sum;
+        Map<Banknote, Integer> mapCash = new HashMap<>();
+        for (Banknote b : set) {
+            int nominal = b.getNominal();
+            AtmBank atmBank = cassette.get(b);
+            Integer banknoteCount = 0;
+
+            while (localSum >= nominal && getRemainder.apply(atmBank, banknoteCount)) {
+                if (localSum >= nominal) {
+                    localSum -= nominal;
+                    banknoteCount++;
+                }
+            }
+
+            if (banknoteCount > 0) {
+                mapCash.put(b, banknoteCount);
+            }
+        }
+
+        if (localSum != 0) {
+            return null;
+        }
+
+        return mapCash;
+    }
+
+    private Boolean checkCountCashToOut(AtmBank atmBank, int banknoteCount) {
+        return (atmBank.getCount() - banknoteCount) > 0;
+    }
+
+    private Boolean checkCountCashToIn(AtmBank atmBank, int banknoteCount) {
+        return (atmBank.getFreeSpace() + banknoteCount) > 0;
+    }
+}
