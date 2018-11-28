@@ -1,6 +1,7 @@
 package ru.otus.java_2018_08.student.hw07.bank;
 
 import ru.otus.java_2018_08.student.hw07.common.Currency;
+import ru.otus.java_2018_08.student.hw07.common.Money;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -24,8 +25,8 @@ public class Account {
         balance -= amount;
     }
 
-    public int getBalance() {
-        return balance;
+    public Money getBalance() {
+        return new Money(currency, balance);
     }
 
     protected void setName(String name) {
@@ -34,10 +35,6 @@ public class Account {
 
     protected void setCurrency(Currency currency) {
         this.currency = currency;
-    }
-
-    public Currency getCurrency() {
-        return currency;
     }
 
     protected String getName() {

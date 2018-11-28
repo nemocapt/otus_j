@@ -6,11 +6,9 @@ import ru.otus.java_2018_08.student.hw07.bank.Account;
 import ru.otus.java_2018_08.student.hw07.bank.Bank;
 import ru.otus.java_2018_08.student.hw07.common.Banknote;
 import ru.otus.java_2018_08.student.hw07.common.Currency;
+import ru.otus.java_2018_08.student.hw07.common.Money;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -54,21 +52,45 @@ public abstract class Atm {
         });
     }
 
-    public Account getBalance() {
+    public Money getBalanceAccount() {
         return state.getBalance(() -> {
             Account account = bank.getAccountByCard(card);
+            Money balance = account.getBalance();
 
-            log.info(account.toString());
+            log.info(balance.toString());
 
-            return account;
+            return balance;
         });
+    }
+
+    public List<Money> getBalanceAtm() {
+        List<Money> bundle = new ArrayList<>();
+
+        Map<Currency, Integer> map = new HashMap<>();
+
+        cassette.forEach((b, a) -> {
+            Money money = new Money(b.getCurrency(),b.getNominal() * a.getCount());
+
+            int prev = bundle.indexOf(money);
+
+            if (prev < 0) {
+                bundle.add(money);
+            }
+            else {
+                bundle.get(prev).addMoney(money);
+            }
+        });
+
+        log.info(String.format("Total in ATM - %s", bundle.toString()));
+
+        return bundle;
     }
 
     public boolean cashOut(final int sum, Currency currency) {
         boolean result = state.tryPullBanknote(this, () -> {
-            Account account = getBalance();
+            Money balance = getBalanceAccount();
 
-            if (currency == account.getCurrency() && account.getBalance() < sum) {
+            if (currency == balance.getCurrency() && balance.getAmount() < sum) {
                 log.warn("Low balance");
 
                 return false;
@@ -101,9 +123,17 @@ public abstract class Atm {
         return result;
     }
 
-    public boolean cashIn(final int sum, Currency currency) {
+    public boolean cashIn(List<Banknote> moneyBundle) {
+        Money money = Money.createByBundle(moneyBundle);
+
         boolean result = state.tryPutBanknote(this, () -> {
-            cash = calculateCash(sum, currency, this::checkCountCashToIn);
+            if (money == null) {
+                log.warn("Different banknotes");
+
+                return false;
+            }
+
+            cash = calculateCash(money.getAmount(), money.getCurrency(), this::checkCountCashToIn);
             if (cash == null) {
                 log.warn("Not enough space");
 
@@ -114,10 +144,10 @@ public abstract class Atm {
         });
 
         result = result && state.putBanknote(this, () -> {
-            cash.forEach((b, i) ->
-                cassette.get(b).put(i)
+            moneyBundle.forEach(b ->
+                cassette.get(b).put(1)
             );
-            bank.getAccountByCard(card).deposit(sum);
+            bank.getAccountByCard(card).deposit(money.getAmount());
 
             log.info("Cash in: {}", cash.toString());
             cash = null;
@@ -131,6 +161,24 @@ public abstract class Atm {
     }
 
     protected abstract void init();
+
+    private Map<Banknote, Integer> decomposeBundle(List<Banknote> bundle) {
+        Map<Banknote, Integer> mapCash = new HashMap<>();
+
+        for (Banknote banknote : bundle) {
+            Integer count = new Integer(1);
+
+            if (!mapCash.containsKey(banknote)) {
+                mapCash.put(banknote, count);
+            }
+            else {
+                count = mapCash.get(banknote);
+                count++;
+            }
+        }
+
+        return mapCash;
+    }
 
     private Map<Banknote, Integer> calculateCash(final int sum, Currency currency, BiFunction<AtmBank, Integer, Boolean> getRemainder) {
         Set<Banknote> set = cassette.keySet().stream().filter(

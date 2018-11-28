@@ -2,7 +2,7 @@ package ru.otus.java_2018_08.student.hw07.bank.acquire;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.otus.java_2018_08.student.hw07.bank.Account;
+import ru.otus.java_2018_08.student.hw07.common.Money;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -31,7 +31,7 @@ public enum AtmState {
         }
 
         @Override
-        Account getBalance(Supplier<Account> getting) {
+        Money getBalance(Supplier<Money> getting) {
             return getting.get();
         }
     },
@@ -106,7 +106,7 @@ public enum AtmState {
         return false;
     }
 
-    Account getBalance(Supplier<Account> getting) {
+    Money getBalance(Supplier<Money> getting) {
         wrongAction();
 
         return null;
