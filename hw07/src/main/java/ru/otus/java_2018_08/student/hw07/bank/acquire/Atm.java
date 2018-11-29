@@ -57,7 +57,7 @@ public abstract class Atm {
             Account account = bank.getAccountByCard(card);
             Money balance = account.getBalance();
 
-            log.info(balance.toString());
+            log.info(String.format("Account balance - %s", balance.toString()));
 
             return balance;
         });
@@ -127,14 +127,9 @@ public abstract class Atm {
         Money money = Money.createByBundle(moneyBundle);
 
         boolean result = state.tryPutBanknote(this, () -> {
-            if (money == null) {
-                log.warn("Different banknotes");
+            cash = decomposeBundle(moneyBundle);
 
-                return false;
-            }
-
-            cash = calculateCash(money.getAmount(), money.getCurrency(), this::checkCountCashToIn);
-            if (cash == null) {
+            if (!checkSpace(cash)) {
                 log.warn("Not enough space");
 
                 return false;
@@ -144,8 +139,8 @@ public abstract class Atm {
         });
 
         result = result && state.putBanknote(this, () -> {
-            moneyBundle.forEach(b ->
-                cassette.get(b).put(1)
+            cash.forEach((b, i) ->
+                cassette.get(b).put(i)
             );
             bank.getAccountByCard(card).deposit(money.getAmount());
 
@@ -166,18 +161,30 @@ public abstract class Atm {
         Map<Banknote, Integer> mapCash = new HashMap<>();
 
         for (Banknote banknote : bundle) {
-            Integer count = new Integer(1);
+            Integer count = 1;
 
             if (!mapCash.containsKey(banknote)) {
                 mapCash.put(banknote, count);
             }
             else {
                 count = mapCash.get(banknote);
-                count++;
+                mapCash.put(banknote, count + 1);
             }
         }
 
         return mapCash;
+    }
+
+    private boolean checkSpace(Map<Banknote, Integer> cash) {
+        for (Map.Entry<Banknote, Integer> item : cash.entrySet()) {
+            AtmBank atmBank = cassette.get(item.getKey());
+
+            if (atmBank == null || atmBank.getFreeSpace() < item.getValue()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private Map<Banknote, Integer> calculateCash(final int sum, Currency currency, BiFunction<AtmBank, Integer, Boolean> getRemainder) {
