@@ -192,7 +192,7 @@ public abstract class Atm {
                 b -> b.getCurrency() == currency
         ).sorted(
                 Comparator.comparingInt(Banknote::getNominal).reversed()
-        ).collect(Collectors.toSet());
+        ).collect(Collectors.toCollection(LinkedHashSet::new));
 
         int localSum = sum;
         Map<Banknote, Integer> mapCash = new HashMap<>();
