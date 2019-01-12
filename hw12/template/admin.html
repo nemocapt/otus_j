@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin</title>
+</head>
+<body>
+    <div class="addUser">
+        <form action="/admin" method="GET">
+            user name: <input type="text" name="add"/>
+            <input type="submit" value="add">
+        </form>
+    </div>
+    <div class="getUser">
+        <form action="/admin" method="GET">
+            user id: <input type="text" name="id"/>
+            <input type="submit" value="get">
+        </form>
+    </div>
+    <div class="maxUser">
+        <form action="/admin" method="GET">
+            <input type="hidden" name="max" value="max"/>
+            <input type="submit" value="max">
+        </form>
+    </div>
+    <#if add??>
+    <p>Added: ${add}</p>
+    </#if>
+    <#if id??>
+    <p>User by id: ${id}</p>
+    </#if>
+    <#if max??>
+    <p>Max users: ${max}</p>
+    </#if>
+</body>
+</html>
