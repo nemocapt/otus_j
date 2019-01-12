@@ -1,4 +1,4 @@
-package ru.otus.java_2018_08.student.hw12.service;
+package ru.otus.java_2018_08.student.hw12.morm.service;
 
 import ru.otus.java_2018_08.student.hw12.morm.UserDataSet;
 

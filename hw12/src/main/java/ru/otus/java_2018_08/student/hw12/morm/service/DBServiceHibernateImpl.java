@@ -1,7 +1,7 @@
-package ru.otus.java_2018_08.student.hw12.service;
+package ru.otus.java_2018_08.student.hw12.morm.service;
 
-import ru.otus.java_2018_08.student.hw12.dao.UsersHibernateDAO;
 import ru.otus.java_2018_08.student.hw12.morm.UserDataSet;
+import ru.otus.java_2018_08.student.hw12.morm.dao.UsersHibernateDAO;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;

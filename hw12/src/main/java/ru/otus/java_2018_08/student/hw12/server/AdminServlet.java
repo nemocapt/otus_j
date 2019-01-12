@@ -1,7 +1,7 @@
 package ru.otus.java_2018_08.student.hw12.server;
 
 import ru.otus.java_2018_08.student.hw12.morm.UserDataSet;
-import ru.otus.java_2018_08.student.hw12.service.DBService;
+import ru.otus.java_2018_08.student.hw12.morm.service.DBService;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Admin extends HttpServlet {
+public class AdminServlet extends HttpServlet {
     static final String LOGIN_DOC = "admin.html";
     static final String PARAM_ADD = "add";
     static final String PARAM_ID = "id";
@@ -21,7 +21,7 @@ public class Admin extends HttpServlet {
     private TemplateProcessor processor;
     private DBService service;
 
-    public Admin(TemplateProcessor processor, DBService service) {
+    public AdminServlet(TemplateProcessor processor, DBService service) {
         this.processor = processor;
         this.service = service;
     }

@@ -2,7 +2,7 @@ package ru.otus.java_2018_08.student.hw12.server;
 
 import lombok.AllArgsConstructor;
 import ru.otus.java_2018_08.student.hw12.morm.UserDataSet;
-import ru.otus.java_2018_08.student.hw12.service.DBService;
+import ru.otus.java_2018_08.student.hw12.morm.service.DBService;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @AllArgsConstructor
-public class Auth extends HttpServlet {
+public class AuthServlet extends HttpServlet {
     static final String URL_ADMIN = "admin";
 
     static final String PARAM_LOGIN = "login";

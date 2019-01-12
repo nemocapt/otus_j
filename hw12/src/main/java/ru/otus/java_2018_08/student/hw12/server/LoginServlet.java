@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @AllArgsConstructor
-public class Login extends HttpServlet {
+public class LoginServlet extends HttpServlet {
     static final String LOGIN_DOC = "login.html";
 
     private TemplateProcessor processor;

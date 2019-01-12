@@ -1,4 +1,4 @@
-package ru.otus.java_2018_08.student.hw12.dao;
+package ru.otus.java_2018_08.student.hw12.morm.dao;
 
 import lombok.AllArgsConstructor;
 import ru.otus.java_2018_08.student.hw12.morm.UserDataSet;

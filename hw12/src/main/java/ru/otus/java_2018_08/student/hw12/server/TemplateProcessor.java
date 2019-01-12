@@ -11,13 +11,20 @@ import java.io.Writer;
 import java.util.Map;
 
 public class TemplateProcessor {
-    private static final String HTML_DIR = "hw12/template";
+    private static final String HTML_DIR = "template";
 
     private final Configuration configuration;
+    private String dir;
 
     public TemplateProcessor() throws IOException {
+        this(HTML_DIR);
+    }
+
+    public TemplateProcessor(String dir) throws IOException {
+        this.dir = dir;
+
         configuration = new Configuration(Configuration.VERSION_2_3_28);
-        configuration.setDirectoryForTemplateLoading(new File(HTML_DIR));
+        configuration.setDirectoryForTemplateLoading(new File(dir));
         configuration.setDefaultEncoding("UTF-8");
     }
 
