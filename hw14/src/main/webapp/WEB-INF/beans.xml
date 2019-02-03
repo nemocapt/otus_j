@@ -1,0 +1,25 @@
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="dbService" class="ru.otus.java_2018_08.student.hw14.orm.service.DBServiceHibernateImpl">
+        <constructor-arg value="maria_jpa" />
+    </bean>
+
+    <bean id="templateProcessor" class="ru.otus.java_2018_08.student.hw14.server.TemplateProcessor"/>
+
+    <!--Default user initialization -->
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetObject"><ref bean="dbService"/></property>
+        <property name="targetMethod"><value>save</value></property>
+        <property name="arguments">
+            <list>
+                <bean class="ru.otus.java_2018_08.student.hw14.orm.UserDataSet">
+                    <constructor-arg value="user" />
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+</beans>
