@@ -1,7 +1,7 @@
 package ru.otus.java_2018_08.student.hw14.server;
 
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import ru.otus.java_2018_08.student.hw14.orm.service.DBService;
 
 import javax.servlet.http.HttpServlet;
@@ -11,7 +11,7 @@ abstract public class AbstractServlet extends HttpServlet {
 
     @Override
     public void init() {
-        context = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
     }
 
     protected DBService getServiceByBean() {

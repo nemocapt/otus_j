@@ -1,5 +1,7 @@
 package ru.otus.java_2018_08.student.hw14.orm.service;
 
+import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
 import ru.otus.java_2018_08.student.hw14.orm.UserDataSet;
 import ru.otus.java_2018_08.student.hw14.orm.dao.UsersHibernateDAO;
 
@@ -9,6 +11,8 @@ import javax.persistence.Persistence;
 import java.util.List;
 import java.util.function.Function;
 
+@Component
+@NoArgsConstructor
 public class DBServiceHibernateImpl implements DBService {
     private EntityManagerFactory emFactory;
 

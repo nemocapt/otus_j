@@ -1,6 +1,8 @@
 package ru.otus.java_2018_08.student.hw14.server;
 
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import ru.otus.java_2018_08.student.hw14.orm.UserDataSet;
 import ru.otus.java_2018_08.student.hw14.orm.service.DBService;
@@ -11,6 +13,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+@Configurable
 @NoArgsConstructor
 public class AdminServlet extends AbstractServlet {
     static final String LOGIN_DOC = "admin.html";
@@ -20,26 +23,15 @@ public class AdminServlet extends AbstractServlet {
 
     static final String PARAM_AUTH = "auth";
 
+    @Autowired
     private TemplateProcessor processor;
+    @Autowired
     private DBService service;
 
     public AdminServlet(TemplateProcessor processor, DBService service) {
         this.processor = processor;
         this.service = service;
         WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-    }
-
-    @Override
-    public void init() {
-        super.init();
-
-        if (service == null) {
-            service = getServiceByBean();
-        }
-
-        if (processor == null) {
-            processor = getProcessorByBean();
-        }
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
